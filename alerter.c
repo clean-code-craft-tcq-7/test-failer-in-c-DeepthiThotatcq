@@ -32,14 +32,16 @@ void alertInCelcius(float farenheit, int (*networkerAlert)(float)) {
         alertFailureCount += 1;
      }
 }
+
 int main() {
-    alertInCelcius(303.6,Test);
+    int (*networkerAlert)(float) = &networkAlertStub;
+    alertInCelcius(400.5, networkerAlert);
     assert(alertFailureCount == 0);
-    alertInCelcius(303.6,prod);
+    alertInCelcius(303.6, networkerAlert);
     assert(alertFailureCount == 0);
-    alertInCelcius(505.5,Test);
+    alertInCelcius(1900.0, networkerAlert);
     assert(alertFailureCount == 1);
-    alertInCelcius(505.5,prod);
+    alertInCelcius(0, networkerAlert);
     assert(alertFailureCount == 2);
     printf("%d alerts failed.\n", alertFailureCount);
     printf("All is well (maybe!)\n");
