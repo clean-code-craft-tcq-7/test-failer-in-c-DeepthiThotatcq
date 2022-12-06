@@ -32,7 +32,6 @@ void alertInCelcius(float farenheit, int (*networkerAlert)(float)) {
         alertFailureCount += 1;
      }
 }
-
 int main() {
     alertInCelcius(303.6,Test);
     assert(alertFailureCount == 0);
