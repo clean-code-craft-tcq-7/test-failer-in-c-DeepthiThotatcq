@@ -1,21 +1,49 @@
 #include <stdio.h>
 #include <assert.h>
 
-int printColorMap() {
-    const char* majorColor[] = {"White", "Red", "Black", "Yellow", "Violet"};
-    const char* minorColor[] = {"Blue", "Orange", "Green", "Brown", "Slate"};
-    int i = 0, j = 0;
-    for(i = 0; i < 5; i++) {
-        for(j = 0; j < 5; j++) {
-            printf("%d | %s | %s\n", i * 5 + j, majorColor[i], minorColor[i]);
-        }
-    }
-    return i * j;
+int alertFailureCount = 0;
+
+int ProductionStub(float celcius) {
+    printf("ALERT: Temperature is %.1f celcius.\n", celcius);
+    // Return 200 for ok
+    // Return 500 for not-ok
+    // stub always succeeds and returns 200
+    if (celcius > 1000 && celcius < 0)
+       return 500;
+     else 
+       return 200;
+}
+
+int Production(float celcius) {
+    printf("ALERT: Temperature is %.1f celcius.\n", celcius);
+    return 0;
+}
+
+
+void alertInCelcius(float farenheit, int (*Production)(float)) {
+    float celcius = (farenheit - 32) * 5 / 9;
+    int returnCode = Production(celcius);
+
+    if (returnCode != 200) {
+        // non-ok response is not an error! Issues happen in life!
+        // let us keep a count of failures to report
+        // However, this code doesn't count failures!
+        // Add a test below to catch this bug. Alter the stub above, if needed.
+        alertFailureCount += 1;
+     }
 }
 
 int main() {
-    int result = printColorMap();
-    assert(result == 25);
+    int (*Production)(float) = &ProductionStub;
+    alertInCelcius(400.5, Production);
+    assert(alertFailureCount == 0);
+    alertInCelcius(303.6, Production);
+    assert(alertFailureCount == 0);
+    alertInCelcius(1900.0, Production);
+    assert(alertFailureCount == 1);
+    alertInCelcius(0, Production);
+    assert(alertFailureCount == 2);
+    printf("%d alerts failed.\n", alertFailureCount);
     printf("All is well (maybe!)\n");
     return 0;
 }
